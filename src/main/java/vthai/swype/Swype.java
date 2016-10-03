@@ -84,28 +84,28 @@ public class Swype {
     public List<String> singleInput(char[] userInput) {
         dictionaryWords.clear();
         
-        StringBuilder accumulatedString = new StringBuilder();
+        char lastChar = userInput[userInput.length - 1];
         Set<String> cachedWords = new HashSet<>();
         
-        char lastChar = userInput[userInput.length - 1];
-        
-        for (char character : userInput) {
-            accumulatedString.append(character);
-            cachedWords.add(accumulatedString.toString());
+        cachedWords.add(String.valueOf(userInput[0]));
+        for (int index = 1; index < userInput.length; index++) {
+            char character = userInput[index];
             
             Set<String> newCachedWords = new HashSet<>();
             
             for (String cachedWord : cachedWords) {
                 String potentialNGram = cachedWord + character;
-                if (dictionary.contains(potentialNGram) 
-                        && potentialNGram.length() >= minimum
+                
+                if (potentialNGram.length() >= minimum
+                        && dictionary.contains(potentialNGram)
                         && potentialNGram.charAt(potentialNGram.length() - 1) == lastChar) {
                     dictionaryWords.add(potentialNGram);
                 }
                 
                 String potentialNGramDoubleLetters = cachedWord + character + character;
-                if (dictionary.contains(potentialNGramDoubleLetters) 
-                        && potentialNGramDoubleLetters.length() >= minimum
+                
+                if (potentialNGramDoubleLetters.length() >= minimum
+                        && dictionary.contains(potentialNGramDoubleLetters) 
                         && potentialNGramDoubleLetters.charAt(potentialNGramDoubleLetters.length() - 1) == lastChar) {
                     dictionaryWords.add(potentialNGramDoubleLetters);
                 }
