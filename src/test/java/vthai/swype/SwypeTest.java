@@ -116,7 +116,7 @@ public class SwypeTest {
     @Test
     public void testComplexIncreaseCache() {
         File resourcesDirectory = new File("src/test/resources");
-        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 35);
+        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 18);
         swype.setMinimum(5);
         String userInput = "gijakjthoijerjidsdfnokg";
         List<String> ngrams = swype.singleInput(userInput.toCharArray());
