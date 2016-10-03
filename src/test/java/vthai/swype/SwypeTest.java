@@ -78,7 +78,7 @@ public class SwypeTest {
     public void testComlexSwipe1() {
         String userInput = "qwertyuytrewertyuijn";
         List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
-        String[] expected = {"qwerty", "queer", "quern", "queen", "query", "quin", "quey"};
+        String[] expected = {"quern", "queen", "quin"};
         
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
@@ -89,7 +89,7 @@ public class SwypeTest {
     public void testComlexSwipe2() {
         String userInput = "qwertyuytresdftyuioknn";
         List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
-        String[] expected = {"question", "qwertys", "qwerty", "queen", "quest", "quin", "quey"};
+        String[] expected = {"question", "queen", "quin"};
         
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
@@ -102,7 +102,7 @@ public class SwypeTest {
         String userInput = "gijakjthoijerjidsdfnokg";
         List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
         
-        String[] expected = {"gathering", "garring", "gittern", "gathers", "gieing", "gators", "goring", "gating", "gather", "gaijin", "geeing", "gittin", "gooier", "gaeing", "girds", "goods", "grids", "ghees", "gated", "goers", "going", "gesso", "gates", "gator", "griff"}; 
+        String[] expected = {"gieing", "goring", "gating", "going", "garring", "geeing", "gathering", "gaeing"}; 
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
         }
@@ -111,12 +111,12 @@ public class SwypeTest {
     @Test
     public void testComplexIncreaseCache() {
         File resourcesDirectory = new File("src/test/resources");
-        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 100);
+        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 35);
         swype.setMinimum(5);
         String userInput = "gijakjthoijerjidsdfnokg";
         List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
         
-        String[] expected = {"gathering", "garring", "gittern", "gathers", "gieing", "gators", "goring", "gating", "gather", "gaijin", "geeing", "gittin", "gooier", "gaeing", "girds", "goods", "grids", "ghees", "gated", "goers", "going", "gesso", "gates", "gator", "griff"}; 
+        String[] expected = {"gieing", "goring", "gating", "going", "garring", "geeing", "gathering", "gaeing"}; 
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
         }

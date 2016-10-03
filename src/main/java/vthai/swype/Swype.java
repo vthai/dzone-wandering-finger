@@ -68,7 +68,7 @@ public class Swype {
     }
     
     public Swype(String dictionaryPath, int minimum) {
-        this(dictionaryPath, minimum, 40);
+        this(dictionaryPath, minimum, 30);
     }
     
     private void buildDictionary(String dictionaryPath) {
@@ -160,11 +160,13 @@ public class Swype {
         }
         
         List<NGram> ngrams = new ArrayList<>(dictionaryWords);
+        char lastChar = userInput[userInput.length - 1];
         List<NGram> reducedngrams = ngrams.stream()
                 .filter(ngram -> ngram.length() >= minimum)
+                .filter(ngram -> ngram.word.charAt(ngram.length()-1) == lastChar)
                 .collect(Collectors.toList());
         
-        reducedngrams.sort((NGram ngram1, NGram ngram2) -> ngram2.length() - ngram1.length());
+        //reducedngrams.sort((NGram ngram1, NGram ngram2) -> ngram2.length() - ngram1.length());
         return reducedngrams;
     }
     
