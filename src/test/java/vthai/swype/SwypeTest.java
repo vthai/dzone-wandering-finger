@@ -10,12 +10,17 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import vthai.swype.Swype.NGram;
-
 public class SwypeTest {
     private Swype swype;
     
     private static final int minimum = 4;
+    
+    public void printAll(List<String> ngrams) {
+        for (String ngram : ngrams) {
+            System.out.print(ngram + " ");
+        }
+        System.out.println();
+    }
     
     @Before
     public void setUp() {
@@ -26,11 +31,11 @@ public class SwypeTest {
     @Test
     public void testSimpleSwipe1() {
         String userInput = "resdft";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         
         boolean exist = false;
-        for (NGram ngram : ngrams) {
-            if (ngram.toString().equals("rest")) {
+        for (String ngram : ngrams) {
+            if (ngram.equals("rest")) {
                 exist = true;
             }
         }
@@ -40,11 +45,11 @@ public class SwypeTest {
     @Test
     public void testSimpleSwipe2() {
         String userInput = "resert";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         
         boolean exist = false;
-        for (NGram ngram : ngrams) {
-            if (ngram.toString().equals("rest")) {
+        for (String ngram : ngrams) {
+            if (ngram.equals("rest")) {
                 exist = true;
             }
         }
@@ -54,11 +59,11 @@ public class SwypeTest {
     @Test
     public void testSwipeDoubleLetter() {
         String userInput = "polkjuytrews";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         
         boolean exist = false;
-        for (NGram ngram : ngrams) {
-            if (ngram.toString().equals("polls")) {
+        for (String ngram : ngrams) {
+            if (ngram.equals("polls")) {
                 exist = true;
             }
         }
@@ -68,16 +73,16 @@ public class SwypeTest {
     @Test
     public void testSwipeResultSize() {
         String userInput = "resdft";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
-        for (NGram ngram : ngrams) {
-            assertTrue(ngram.toString().length() >= minimum);
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
+        for (String ngram : ngrams) {
+            assertTrue(ngram.length() >= minimum);
         }
     }
     
     @Test
     public void testComlexSwipe1() {
         String userInput = "qwertyuytrewertyuijn";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         String[] expected = {"quern", "queen", "quin"};
         
         for (int index = 0; index < ngrams.size(); index++) {
@@ -88,7 +93,7 @@ public class SwypeTest {
     @Test
     public void testComlexSwipe2() {
         String userInput = "qwertyuytresdftyuioknn";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         String[] expected = {"question", "queen", "quin"};
         
         for (int index = 0; index < ngrams.size(); index++) {
@@ -100,9 +105,9 @@ public class SwypeTest {
     public void testComlexSwipe3() {
         swype.setMinimum(5);
         String userInput = "gijakjthoijerjidsdfnokg";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         
-        String[] expected = {"gieing", "goring", "gating", "going", "garring", "geeing", "gathering", "gaeing"}; 
+        String[] expected = {"going", "gieing", "gating", "geeing", "garring", "goring", "gathering", "gaeing"}; 
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
         }
@@ -114,9 +119,9 @@ public class SwypeTest {
         swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 35);
         swype.setMinimum(5);
         String userInput = "gijakjthoijerjidsdfnokg";
-        List<NGram> ngrams = swype.singleInput(userInput.toCharArray());
+        List<String> ngrams = swype.singleInput(userInput.toCharArray());
         
-        String[] expected = {"gieing", "goring", "gating", "going", "garring", "geeing", "gathering", "gaeing"}; 
+        String[] expected = {"going", "gieing", "gating", "geeing", "garring", "goring", "gathering", "gaeing"}; 
         for (int index = 0; index < ngrams.size(); index++) {
             assertThat(ngrams.get(index).toString(), equalTo(expected[index]));
         }

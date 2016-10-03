@@ -5,59 +5,24 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Swype {
     private Set<String> dictionary;
     
     private Scanner inputReader;
     
-    private Set<NGram> dictionaryWords;
+    private Set<String> dictionaryWords;
     
     private Map<Integer, Set<String>> prefixes;
     
     private int minimum;
     
     private int cachedLevel;
-    
-    public class NGram {
-        private String word;
-        
-        public NGram(String word) {
-            this.word = word;
-        }
-        
-        @Override
-        public int hashCode() {
-            return word.hashCode();
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof NGram)) {
-                return false;
-            }
-            NGram ngram = (NGram)obj;
-            
-            return this.word.equals(ngram.word);
-        }
-        
-        public int length() {
-            return word.length();
-        }
-        
-        @Override
-        public String toString() {
-            return word;
-        }
-    }
     
     public Swype(String dictionaryPath, int minimum, int cacheLevel) {
         this.minimum = minimum;
@@ -68,7 +33,7 @@ public class Swype {
     }
     
     public Swype(String dictionaryPath, int minimum) {
-        this(dictionaryPath, minimum, 30);
+        this(dictionaryPath, minimum, 12);
     }
     
     private void buildDictionary(String dictionaryPath) {
@@ -108,32 +73,21 @@ public class Swype {
         }
     }
     
-    private void displayResult(List<NGram> ngrams) {
+    private void displayResult(List<String> ngrams) {
         System.out.println("\nThis is the list of ngrams that have 5+ characters:");
-        for (NGram ngram : ngrams) {
-            System.out.println(ngram.word);
+        for (String ngram : ngrams) {
+            System.out.println(ngram);
         }
         System.out.println();
     }
     
-    private void cleanUpImpossibleCacheWords(Set<String> cachedWords) {
-        Iterator<String> iterator = cachedWords.iterator();
-        while (iterator.hasNext()) {
-            String cachedWord = iterator.next();
-            
-            Set<String> prefixList = prefixes.get(cachedWord.length());
-            if (prefixList != null && !prefixList.contains(cachedWord)) {
-                //System.out.println("Remove  " + cachedWord.length() + ": " + cachedWord);
-                iterator.remove();
-            }
-        }
-    }
-    
-    public List<NGram> singleInput(char[] userInput) {
+    public List<String> singleInput(char[] userInput) {
         dictionaryWords.clear();
         
         StringBuilder accumulatedString = new StringBuilder();
         Set<String> cachedWords = new HashSet<>();
+        
+        char lastChar = userInput[userInput.length - 1];
         
         for (char character : userInput) {
             accumulatedString.append(character);
@@ -143,31 +97,29 @@ public class Swype {
             
             for (String cachedWord : cachedWords) {
                 String potentialNGram = cachedWord + character;
-                if (dictionary.contains(potentialNGram)) {
-                    dictionaryWords.add(new NGram(potentialNGram));
+                if (dictionary.contains(potentialNGram) 
+                        && potentialNGram.length() >= minimum
+                        && potentialNGram.charAt(potentialNGram.length() - 1) == lastChar) {
+                    dictionaryWords.add(potentialNGram);
                 }
                 
                 String potentialNGramDoubleLetters = cachedWord + character + character;
-                if (dictionary.contains(potentialNGramDoubleLetters)) {
-                    dictionaryWords.add(new NGram(potentialNGramDoubleLetters));
+                if (dictionary.contains(potentialNGramDoubleLetters) 
+                        && potentialNGramDoubleLetters.length() >= minimum
+                        && potentialNGramDoubleLetters.charAt(potentialNGramDoubleLetters.length() - 1) == lastChar) {
+                    dictionaryWords.add(potentialNGramDoubleLetters);
                 }
                 
-                newCachedWords.add(potentialNGram);
-                newCachedWords.add(potentialNGramDoubleLetters);
+                Set<String> prefixList = prefixes.get(potentialNGram.length());
+                if (prefixList != null && prefixList.contains(potentialNGram)) {
+                    newCachedWords.add(potentialNGram);
+                    newCachedWords.add(potentialNGramDoubleLetters);
+                }
             }
             cachedWords.addAll(newCachedWords);
-            cleanUpImpossibleCacheWords(cachedWords);
         }
         
-        List<NGram> ngrams = new ArrayList<>(dictionaryWords);
-        char lastChar = userInput[userInput.length - 1];
-        List<NGram> reducedngrams = ngrams.stream()
-                .filter(ngram -> ngram.length() >= minimum)
-                .filter(ngram -> ngram.word.charAt(ngram.length()-1) == lastChar)
-                .collect(Collectors.toList());
-        
-        //reducedngrams.sort((NGram ngram1, NGram ngram2) -> ngram2.length() - ngram1.length());
-        return reducedngrams;
+        return new ArrayList<>(dictionaryWords);
     }
     
     public void setMinimum(int minimum) {
@@ -180,7 +132,7 @@ public class Swype {
         Optional<char[]> userInput = readUserInput();
         
         while (userInput.isPresent()) {
-            List<NGram> ngrams = singleInput(userInput.get());
+            List<String> ngrams = singleInput(userInput.get());
             displayResult(ngrams);
             
             userInput = readUserInput();
