@@ -1,8 +1,9 @@
-package vthai.swype;
+package vthai.wfinger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +12,12 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 
-public class Swype {
+public class WanderingFinger {
     private Set<String> dictionary;
     
     private Scanner inputReader;
     
-    private Set<String> dictionaryWords;
+    private Set<String> ngramsFound;
     
     private Map<Integer, Set<String>> prefixes;
     
@@ -24,15 +25,15 @@ public class Swype {
     
     private int cachedLevel;
     
-    public Swype(String dictionaryPath, int minimum, int cacheLevel) {
+    public WanderingFinger(String dictionaryPath, int minimum, int cacheLevel) {
         this.minimum = minimum;
         this.cachedLevel = cacheLevel;
         
         buildDictionary(dictionaryPath);
-        dictionaryWords = new HashSet<>();
+        ngramsFound = new HashSet<>();
     }
     
-    public Swype(String dictionaryPath, int minimum) {
+    public WanderingFinger(String dictionaryPath, int minimum) {
         this(dictionaryPath, minimum, 12);
     }
     
@@ -81,13 +82,19 @@ public class Swype {
         System.out.println();
     }
     
+    private boolean isTrulyPotential(String candidate) {
+        return prefixes.getOrDefault(candidate.length(), Collections.emptySet())
+                .contains(candidate);
+    }
+    
     public List<String> singleInput(char[] userInput) {
-        dictionaryWords.clear();
+        ngramsFound.clear();
         
         char lastChar = userInput[userInput.length - 1];
         Set<String> cachedWords = new HashSet<>();
         
         cachedWords.add(String.valueOf(userInput[0]));
+        
         for (int index = 1; index < userInput.length; index++) {
             char character = userInput[index];
             
@@ -98,28 +105,30 @@ public class Swype {
                 
                 if (potentialNGram.length() >= minimum
                         && dictionary.contains(potentialNGram)
-                        && potentialNGram.charAt(potentialNGram.length() - 1) == lastChar) {
-                    dictionaryWords.add(potentialNGram);
+                        && character == lastChar) {
+                    ngramsFound.add(potentialNGram);
                 }
                 
                 String potentialNGramDoubleLetters = cachedWord + character + character;
                 
                 if (potentialNGramDoubleLetters.length() >= minimum
                         && dictionary.contains(potentialNGramDoubleLetters) 
-                        && potentialNGramDoubleLetters.charAt(potentialNGramDoubleLetters.length() - 1) == lastChar) {
-                    dictionaryWords.add(potentialNGramDoubleLetters);
+                        && character == lastChar) {
+                    ngramsFound.add(potentialNGramDoubleLetters);
                 }
                 
-                Set<String> prefixList = prefixes.get(potentialNGram.length());
-                if (prefixList != null && prefixList.contains(potentialNGram)) {
+                if (isTrulyPotential(potentialNGram)) {
                     newCachedWords.add(potentialNGram);
+                }
+                
+                if (isTrulyPotential(potentialNGramDoubleLetters)) {
                     newCachedWords.add(potentialNGramDoubleLetters);
                 }
             }
             cachedWords.addAll(newCachedWords);
         }
         
-        return new ArrayList<>(dictionaryWords);
+        return new ArrayList<>(ngramsFound);
     }
     
     public void setMinimum(int minimum) {
@@ -146,7 +155,7 @@ public class Swype {
             System.out.println("Please provide the dictionary file");
             return;
         }
-        Swype swype = new Swype(args[0], 5);
+        WanderingFinger swype = new WanderingFinger(args[0], 5);
         swype.interactiveInput();
     }
 }

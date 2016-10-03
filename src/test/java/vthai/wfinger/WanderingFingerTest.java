@@ -1,4 +1,4 @@
-package vthai.swype;
+package vthai.wfinger;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -10,8 +10,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SwypeTest {
-    private Swype swype;
+import vthai.wfinger.WanderingFinger;
+
+public class WanderingFingerTest {
+    private WanderingFinger swype;
     
     private static final int minimum = 4;
     
@@ -25,7 +27,7 @@ public class SwypeTest {
     @Before
     public void setUp() {
         File resourcesDirectory = new File("src/test/resources");
-        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4);
+        swype = new WanderingFinger(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4);
     }
     
     @Test
@@ -116,7 +118,7 @@ public class SwypeTest {
     @Test
     public void testComplexIncreaseCache() {
         File resourcesDirectory = new File("src/test/resources");
-        swype = new Swype(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 18);
+        swype = new WanderingFinger(resourcesDirectory.getAbsolutePath() + "/enable1.txt", 4, 18);
         swype.setMinimum(5);
         String userInput = "gijakjthoijerjidsdfnokg";
         List<String> ngrams = swype.singleInput(userInput.toCharArray());
